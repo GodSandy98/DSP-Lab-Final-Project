@@ -7,6 +7,7 @@ import numpy as np
 from scipy import signal
 from math import sin, cos, pi
 import tkinter as Tk
+import ui
 
 BLOCKLEN   = 64        # Number of frames per block
 WIDTH       = 2         # Bytes per sample
@@ -83,6 +84,7 @@ def my_function(event):
 
 root = Tk.Tk()
 root.bind("<Key>", my_function)
+ui.updateUI(root)
 
 m = Tk.IntVar()
 
