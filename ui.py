@@ -7,34 +7,34 @@ from threading import Thread
 
 class Interface():
 
-     def __init__(self):
-         self.KEYPRESS = [False for i in range(20)]
-         self.CONTINUE = True
-         self.RECORDING = False
+    def __init__(self):
+        self.KEYPRESS = [False for i in range(20)]
+        self.CONTINUE = True
+        self.RECORDING = False
 
-     def buttonFlash(self, button):
+    def buttonFlash(self, button):
         button.flash()
 
      # KeyPressed function
-     def my_function(self, event):
-         print('You pressed ' + event.char)
+    def my_function(self, event):
+        print('You pressed ' + event.char)
 
-         if event.char == 'x':
-             print('Good Bye')
-             self.CONTINUE = False
+        if event.char == 'x':
+            print('Good Bye')
+            self.CONTINUE = False
 
-         keys = ['q', '2', 'w', '3', 'e', 'r', '5', 't', '6', 'y', '7', 'u', 'i', '9', 'o', '0', 'p', '[', '=', ']']
+        keys = ['q', '2', 'w', '3', 'e', 'r', '5', 't', '6', 'y', '7', 'u', 'i', '9', 'o', '0', 'p', '[', '=', ']']
 
-         for i in range(20):
-             if event.char == keys[i]:
+        for i in range(20):
+            if event.char == keys[i]:
                  # print('Frequency: %.2f' % f[i])
-                 self.KEYPRESS[i] = True
+                self.KEYPRESS[i] = True
                  # thread1 = Thread(target=self.buttonFlash(self.btnDown[0]))
                  # thread1.start()
                  # self.btnDown[0].flash()
 
      # ButtonPressed function
-     def buttonPressed(self, event):
+    def buttonPressed(self, event):
         # print(event.widget["text"])
         buttons = [
             'C1', 'c1', 'D1', 'd1', 'E1', 'F1', 'f1', 'G1', 'g1', 'A1', 'a1',
@@ -54,7 +54,7 @@ class Interface():
      
      
      # Add Record function
-     def addRecording(self, root):
+    def addRecording(self, root):
         def recordBtnPressed():
             if self.RECORDING:
                 self.RECORDING = False
@@ -70,7 +70,7 @@ class Interface():
         btn.place(x=40, y=40, width=50, height=30)
 
      # Build UI
-     def updateUI(self, root):
+    def updateUI(self, root):
 
         frame = Tk.Frame(root, borderwidth=2, width=560, height=250)
         frame.pack(side=Tk.TOP, fill=Tk.BOTH, expand=1)
