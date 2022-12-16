@@ -8,6 +8,7 @@ from scipy import signal
 from math import sin, cos, pi
 import tkinter as Tk
 import ui
+from threading import Thread
 
 BLOCKLEN   = 64        # Number of frames per block
 WIDTH       = 2         # Bytes per sample
@@ -39,7 +40,7 @@ total = np.zeros(BLOCKLEN)
 
 # parameters for guitar
 K = 0.93
-G = 10000
+G = 20000
 
 pitches = [int(RATE/i) for i in f]
 BUFFER_LEN = [i for i in pitches]
@@ -62,28 +63,32 @@ stream = p.open(
 # specify low frames_per_buffer to reduce latency
 
 CONTINUE = True
-KEYPRESS = [False for i in range(20)]
-
-def my_function(event):
-    global CONTINUE
-    global KEYPRESS
-    global f
-
-    print('You pressed ' + event.char)
-
-    if event.char == 'x':
-      print('Good Bye')
-      CONTINUE = False
-    
-    keys = ['q', '2', 'w', '3', 'e', 'r', '5', 't', '6', 'y', '7', 'u', 'i', '9', 'o', '0', 'p', '[', '=', ']']
-
-    for i in range(20):
-        if event.char == keys[i]:
-            print('Frequency: %.2f' %f[i])
-            KEYPRESS[i] = True
+# KEYPRESS = [False for i in range(20)]
+#
+# def my_function(event):
+#     global CONTINUE
+#     global KEYPRESS
+#     global f
+#
+#     print('You pressed ' + event.char)
+#
+#     if event.char == 'x':
+#       print('Good Bye')
+#       CONTINUE = False
+#
+#     keys = ['q', '2', 'w', '3', 'e', 'r', '5', 't', '6', 'y', '7', 'u', 'i', '9', 'o', '0', 'p', '[', '=', ']']
+#
+#     for i in range(20):
+#         if event.char == keys[i]:
+#             print('Frequency: %.2f' %f[i])
+#             KEYPRESS[i] = True
 
 root = Tk.Tk()
-root.bind("<Key>", my_function)
+ui = ui.Interface()
+# my_function = ui.my_function()
+
+root.bind("<Key>", ui.my_function)
+
 ui.updateUI(root)
 
 m = Tk.IntVar()
@@ -98,9 +103,16 @@ m2.pack(side = Tk.TOP)
 print('Press keys for sound.')
 print('Press "x" to quit')
 
+
+
 while CONTINUE:
     root.update()
     mode = m.get()
+    KEYPRESS = ui.KEYPRESS
+
+    # print(KEYPRESS)
+    CONTINUE = ui.CONTINUE
+    # thread1 = Thread(target=)
 
     if mode == 0:
         total = np.zeros(BLOCKLEN)
