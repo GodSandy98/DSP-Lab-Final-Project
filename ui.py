@@ -1,6 +1,8 @@
 import tkinter as Tk
 import tkinter.font as font
 from threading import Thread
+# from tkmacosx import Button
+
 
 
 class Interface():
@@ -8,6 +10,7 @@ class Interface():
      def __init__(self):
          self.KEYPRESS = [False for i in range(20)]
          self.CONTINUE = True
+         self.RECORDING = False
 
      def buttonFlash(self, button):
         button.flash()
@@ -47,6 +50,25 @@ class Interface():
      #     self.KEYPRESS[1] = True
      #     if event.char == 'q':
      #        self.btnDown[0].flash()
+     
+     # Recording Btn clicked
+     
+     
+     # Add Record function
+     def addRecording(self, root):
+        def recordBtnPressed():
+            if self.RECORDING:
+                self.RECORDING = False
+                btn['bg']='green'
+                btn['text']='Start'
+            else:
+                self.RECORDING = True
+                btn['bg']='red'
+                btn['text']='Stop'
+        frame = Tk.Frame(root, borderwidth=2, width=560, height=80)
+        frame.pack(side=Tk.TOP, fill=Tk.BOTH, expand=1)
+        btn = Tk.Button(frame, bg='green',fg='white', text='Start', command=recordBtnPressed)
+        btn.place(x=40, y=40, width=50, height=30)
 
      # Build UI
      def updateUI(self, root):

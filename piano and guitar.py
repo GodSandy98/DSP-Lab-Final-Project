@@ -9,6 +9,7 @@ from math import sin, cos, pi
 import tkinter as Tk
 import ui
 from threading import Thread
+import wave
 
 BLOCKLEN   = 64        # Number of frames per block
 WIDTH       = 2         # Bytes per sample
@@ -16,6 +17,12 @@ CHANNELS    = 1         # Mono
 RATE        = 8000      # Frames per second
 
 MAXVALUE = 2**15-1  # Maximum allowed output signal value (because WIDTH = 2)
+
+output_wavfile = 'output_original.wav'
+output_wf = wave.open(output_wavfile, 'w')      # wave file
+output_wf.setframerate(RATE)
+output_wf.setsampwidth(WIDTH)
+output_wf.setnchannels(CHANNELS)
 
 # Parameters
 Ta = 2      # Decay time (seconds)
@@ -89,6 +96,7 @@ ui = ui.Interface()
 
 root.bind("<Key>", ui.my_function)
 
+ui.addRecording(root)
 ui.updateUI(root)
 
 m = Tk.IntVar()
@@ -126,6 +134,8 @@ while CONTINUE:
             total = total + y
         total = np.clip(total.astype(int), -MAXVALUE, MAXVALUE)
         binary_data = struct.pack('h' * BLOCKLEN, *total);    # Convert to binary binary data
+        if ui.RECORDING:
+            output_wf.writeframes(binary_data)
         stream.write(binary_data, BLOCKLEN)               # Write binary binary data to audio output
 
     elif mode == 1:
@@ -151,6 +161,8 @@ while CONTINUE:
                 total = total + y
             total = np.clip(total, -MAXVALUE, MAXVALUE)
             binary_data = struct.pack('h', int(total))    # Convert to binary binary data
+            if ui.RECORDING:
+                output_wf.writeframes(binary_data)
             stream.write(binary_data)               # Write binary binary data to audio output
             for i in range(20):
                 gain_guitar[i] = 0
@@ -162,3 +174,4 @@ print('* Done.')
 stream.stop_stream()
 stream.close()
 p.terminate()
+output_wf.close()
