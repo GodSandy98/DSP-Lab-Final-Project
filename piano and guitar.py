@@ -25,7 +25,73 @@ output_wf.setsampwidth(WIDTH)
 output_wf.setnchannels(CHANNELS)
 
 # Parameters
+
+majors = {
+    'A': 0,
+    'bB' : 1,
+    'C' : 3,
+    'D' : 5,
+    'bE' : 6,
+    'F' : 8,
+    'G' : 10
+}
+
+def updateMajorParameters(major):
+    Ta = 2
+
+    i = majors[major]
+    f0 = 220 * 2 ** (i / 12.0)
+    R = [2 ** (1.0 / 12.0 * i) for i in range(20)]  # 1.05946309^i
+    f = [f0 * i for i in R]  # 220 * 1.05946309^i
+
+    r = 0.01 ** (1.0 / (Ta * RATE))  # 0.01 for 1 percent amplitude
+    omega = [2.0 * pi * float(i) / RATE for i in f]
+
+    a = [[1, -2 * r * cos(om), r ** 2] for om in omega]
+    b = [[r * sin(om)] for om in omega]
+
+    pitches = [int(RATE / i) for i in f]
+    BUFFER_LEN = [i for i in pitches]
+    buffers = [i * [0] for i in BUFFER_LEN]
+
+    return a, b, BUFFER_LEN, buffers
+
+root = Tk.Tk()
+ui = ui.Interface()
+
+root.bind("<Key>", ui.my_function)
+
+# ui.updateUI(root)
+
+major = Tk.StringVar()
+major1 = Tk.Radiobutton(root, text='A',variable=major, value='A')
+major2= Tk.Radiobutton(root, text='bB',variable=major, value='bB')
+major3 = Tk.Radiobutton(root, text='C',variable=major, value='C')
+major4 = Tk.Radiobutton(root, text='D',variable=major, value='D')
+major5 = Tk.Radiobutton(root, text='bE',variable=major, value='bE')
+major6 = Tk.Radiobutton(root, text='F',variable=major, value='F')
+major7 = Tk.Radiobutton(root, text='G',variable=major, value='G')
+major.set('C')
+
+major1.pack(side = Tk.LEFT)
+major2.pack(side = Tk.LEFT)
+major3.pack(side = Tk.LEFT)
+major4.pack(side = Tk.LEFT)
+major5.pack(side = Tk.LEFT)
+major6.pack(side = Tk.LEFT)
+major7.pack(side = Tk.LEFT)
+
+m = Tk.IntVar()
+
+
+m1 = Tk.Radiobutton(root, text='piano',variable=m, value=0)
+m2 = Tk.Radiobutton(root, text='guitar',variable=m, value=1)
+
+m1.pack(side = Tk.TOP)
+m2.pack(side = Tk.TOP)
+
 Ta = 2      # Decay time (seconds)
+# f0 = 220 * 2 ** (3.0/12.0)    # Frequency (Hz) (note A)
 f0 = 220 * 2 ** (3.0/12.0)    # Frequency (Hz) (note A)
 R = [2 ** (1.0/12.0 * i) for i in range(20)]    # 1.05946309^i
 f = [f0 * i for i in R]     # 220 * 1.05946309^i
@@ -70,29 +136,11 @@ stream = p.open(
 # specify low frames_per_buffer to reduce latency
 
 CONTINUE = True
-# KEYPRESS = [False for i in range(20)]
-#
-# def my_function(event):
-#     global CONTINUE
-#     global KEYPRESS
-#     global f
-#
-#     print('You pressed ' + event.char)
-#
-#     if event.char == 'x':
-#       print('Good Bye')
-#       CONTINUE = False
-#
-#     keys = ['q', '2', 'w', '3', 'e', 'r', '5', 't', '6', 'y', '7', 'u', 'i', '9', 'o', '0', 'p', '[', '=', ']']
-#
-#     for i in range(20):
-#         if event.char == keys[i]:
-#             print('Frequency: %.2f' %f[i])
-#             KEYPRESS[i] = True
 
-root = Tk.Tk()
-ui = ui.Interface()
-# my_function = ui.my_function()
+
+# root = Tk.Tk()
+# ui = Interface()
+# # my_function = ui.my_function()
 
 root.bind("<Key>", ui.my_function)
 
@@ -101,21 +149,17 @@ ui.updateUI(root)
 
 m = Tk.IntVar()
 
-
-m1 = Tk.Radiobutton(root, text='piano',variable=m, value=0)
-m2 = Tk.Radiobutton(root, text='guitar',variable=m, value=1)
-
-m1.pack(side = Tk.LEFT)
-m2.pack(side = Tk.TOP)
-
 print('Press keys for sound.')
 print('Press "x" to quit')
-
-
 
 while CONTINUE:
     root.update()
     mode = m.get()
+
+    maj = major.get()
+
+    a, b, BUFFER_LEN, buffers = updateMajorParameters(maj)
+
     KEYPRESS = ui.KEYPRESS
 
     # print(KEYPRESS)
@@ -133,7 +177,7 @@ while CONTINUE:
             y = np.clip(y.astype(int), -MAXVALUE, MAXVALUE)     # Clipping
             total = total + y
         total = np.clip(total.astype(int), -MAXVALUE, MAXVALUE)
-        binary_data = struct.pack('h' * BLOCKLEN, *total);    # Convert to binary binary data
+        binary_data = struct.pack('h' * BLOCKLEN, *total)    # Convert to binary binary data
         if ui.RECORDING:
             output_wf.writeframes(binary_data)
         stream.write(binary_data, BLOCKLEN)               # Write binary binary data to audio output
@@ -146,6 +190,7 @@ while CONTINUE:
                 if KEYPRESS[i] and CONTINUE:
                     # Some key (not 'q') was pressed
                     gain_guitar[i] = G
+                # print(i)
                 y = gain_guitar[i] + K/2 * buffers[i][kr_guitar[i]] + K/2 * buffers[i][kr_guitar[i]-1]
                 buffers[i][kw_guitar[i]] = y
                 kr_guitar[i] = kr_guitar[i] + 1

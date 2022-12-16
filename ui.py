@@ -15,7 +15,6 @@ class Interface():
      def buttonFlash(self, button):
         button.flash()
 
-
      # KeyPressed function
      def my_function(self, event):
          print('You pressed ' + event.char)
