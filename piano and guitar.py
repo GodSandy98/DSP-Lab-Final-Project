@@ -59,7 +59,7 @@ def updateMajorParameters(major):
     return a, b, BUFFER_LEN, buffers
 
 root = Tk.Tk()
-ui = ui.Interface(platform.system())
+ui = ui.Interface()
 
 title = Tk.Label(root, text="Piano & Guitar Keyboard", font=tkFont.Font(family='times',size=16, weight='bold'))
 title.pack(side = Tk.TOP)

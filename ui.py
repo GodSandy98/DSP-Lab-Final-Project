@@ -5,27 +5,21 @@ from threading import Thread
 import scipy.io.wavfile as wavfile
 import numpy as np
 from playsound import playsound
-
-
-
-from tkmacosx import Button
-
-
+import platform
+if platform.system() == "Darwin":
+    from tkmacosx import Button
+else:
+    from tkinter import Button
 
 class Interface:
 
-    def __init__(self, os):
+    def __init__(self):
         self.KEYPRESS = [False for i in range(20)]
         self.CONTINUE = True
         self.RECORDING = False
         self.IR_PATH = "./IRs/"
         self.IR_NAME = "Church"
         self.IR_FULLPATH = "./IRs/Church.wav"
-        self.os = os
-        if self.os == "Darwin":
-            from tkmacosx import Button
-        else:
-            from tkinter import Button
 
     def buttonFlash(self, button):
         button.flash()
