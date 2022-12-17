@@ -33,11 +33,8 @@ class Interface():
 
         for i in range(20):
             if event.char == keys[i]:
-                 # print('Frequency: %.2f' % f[i])
                 self.KEYPRESS[i] = True
-                 # thread1 = Thread(target=self.buttonFlash(self.btnDown[0]))
-                 # thread1.start()
-                 # self.btnDown[0].flash()
+
 
      # ButtonPressed function
     def buttonPressed(self, event):
@@ -49,12 +46,6 @@ class Interface():
         for i in range(20):
             if event.widget['text'] == buttons[i]:
                 self.KEYPRESS[i] = True
-
-
-     # def noteClicked(self, event):
-     #     self.KEYPRESS[1] = True
-     #     if event.char == 'q':
-     #        self.btnDown[0].flash()
      
      # Recording Btn clicked
         
@@ -102,14 +93,13 @@ class Interface():
         effectComb.bind('<<ComboboxSelected>>', changeSelectedEffect)
         mixBtn = Tk.Button(frame, bg='white',fg='black', text='Mix', command=mixBtnPressed)
         mixBtn.pack(side=Tk.LEFT, fill=Tk.Y, expand=1)
-    
-    
         
      # Build UI
     def updateUI(self, root):
 
-        frame = Tk.Frame(root, borderwidth=2, width=560, height=250)
-        frame.pack(side=Tk.TOP, fill=Tk.BOTH, expand=1)
+        frame = Tk.Frame(root, borderwidth=2, width=320, height=200)
+        # frame = Tk.Frame(outFrame, borderwidth=2, width=560, height=250)
+        frame.pack(side=Tk.TOP)
 
         for i in range(12):
             match i:

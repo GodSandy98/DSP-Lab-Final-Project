@@ -7,6 +7,7 @@ import numpy as np
 from scipy import signal
 from math import sin, cos, pi
 import tkinter as Tk
+import tkinter.font as tkFont
 import ui
 from threading import Thread
 import wave
@@ -59,18 +60,24 @@ def updateMajorParameters(major):
 root = Tk.Tk()
 ui = ui.Interface()
 
+title = Tk.Label(root, text="Piano & Guitar Keyboard", font=tkFont.Font(family='times',size=16, weight='bold'))
+title.pack(side = Tk.TOP)
+
 root.bind("<Key>", ui.my_function)
 
-# ui.updateUI(root)
+majorFrame = Tk.Frame(root, borderwidth=2, width=40, height=60)
+majorFrame.pack(side=Tk.BOTTOM)
+majorTitle = Tk.Label(majorFrame, text="Major Selection", font=tkFont.Font(family='times', weight='bold'))
+majorTitle.pack(side = Tk.TOP)
 
 major = Tk.StringVar()
-major1 = Tk.Radiobutton(root, text='A',variable=major, value='A')
-major2= Tk.Radiobutton(root, text='bB',variable=major, value='bB')
-major3 = Tk.Radiobutton(root, text='C',variable=major, value='C')
-major4 = Tk.Radiobutton(root, text='D',variable=major, value='D')
-major5 = Tk.Radiobutton(root, text='bE',variable=major, value='bE')
-major6 = Tk.Radiobutton(root, text='F',variable=major, value='F')
-major7 = Tk.Radiobutton(root, text='G',variable=major, value='G')
+major1 = Tk.Radiobutton(majorFrame, text='A',variable=major, value='A')
+major2= Tk.Radiobutton(majorFrame, text='bB',variable=major, value='bB')
+major3 = Tk.Radiobutton(majorFrame, text='C',variable=major, value='C')
+major4 = Tk.Radiobutton(majorFrame, text='D',variable=major, value='D')
+major5 = Tk.Radiobutton(majorFrame, text='bE',variable=major, value='bE')
+major6 = Tk.Radiobutton(majorFrame, text='F',variable=major, value='F')
+major7 = Tk.Radiobutton(majorFrame, text='G',variable=major, value='G')
 major.set('C')
 
 major1.pack(side = Tk.LEFT)
@@ -83,12 +90,16 @@ major7.pack(side = Tk.LEFT)
 
 m = Tk.IntVar()
 
+modeFrame = Tk.Frame(root, borderwidth=2, width=40, height=60)
+modeFrame.pack(side=Tk.BOTTOM)
+modeTitle = Tk.Label(modeFrame, text="Mode Selection", font=tkFont.Font(family='times', weight='bold'))
+modeTitle.pack(side = Tk.TOP)
 
-m1 = Tk.Radiobutton(root, text='piano',variable=m, value=0)
-m2 = Tk.Radiobutton(root, text='guitar',variable=m, value=1)
+m1 = Tk.Radiobutton(modeFrame, text='piano',variable=m, value=0)
+m2 = Tk.Radiobutton(modeFrame, text='guitar',variable=m, value=1)
 
-m1.pack(side = Tk.TOP)
-m2.pack(side = Tk.TOP)
+m1.pack(side = Tk.LEFT)
+m2.pack(side = Tk.LEFT)
 
 Ta = 2      # Decay time (seconds)
 # f0 = 220 * 2 ** (3.0/12.0)    # Frequency (Hz) (note A)
@@ -137,17 +148,10 @@ stream = p.open(
 
 CONTINUE = True
 
-
-# root = Tk.Tk()
-# ui = Interface()
-# # my_function = ui.my_function()
-
 root.bind("<Key>", ui.my_function)
 
 ui.addRecording(root)
 ui.updateUI(root)
-
-m = Tk.IntVar()
 
 print('Press keys for sound.')
 print('Press "x" to quit')
@@ -184,6 +188,9 @@ while CONTINUE:
 
     elif mode == 1:
 
+        kr_guitar = [0] * 20
+        kw_guitar = [0] * 20
+        gain_guitar = [0] * 20
         for i in range(0, BLOCKLEN):
             total = 0
             for i in range(20):
