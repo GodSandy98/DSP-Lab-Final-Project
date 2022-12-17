@@ -11,6 +11,7 @@ import tkinter.font as tkFont
 import ui
 from threading import Thread
 import wave
+import platform
 
 BLOCKLEN   = 64        # Number of frames per block
 WIDTH       = 2         # Bytes per sample
@@ -58,7 +59,7 @@ def updateMajorParameters(major):
     return a, b, BUFFER_LEN, buffers
 
 root = Tk.Tk()
-ui = ui.Interface()
+ui = ui.Interface(platform.system())
 
 title = Tk.Label(root, text="Piano & Guitar Keyboard", font=tkFont.Font(family='times',size=16, weight='bold'))
 title.pack(side = Tk.TOP)
@@ -153,7 +154,7 @@ root.bind("<Key>", ui.my_function)
 ui.addRecording(root)
 ui.updateUI(root)
 
-print('Press keys for sound.')
+print('Press "q" - "]" & "2,3,5,6,7,9,0,=" for sound.')
 print('Press "x" to quit')
 
 while CONTINUE:
