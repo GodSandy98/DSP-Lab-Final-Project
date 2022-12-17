@@ -73,6 +73,7 @@ class Interface():
             output = np.convolve(IR_sig, mySound_sig)
             
             wavfile.write("output_mixed.wav", fs1, output)
+            print("------ mixed complete ------")
             
         def changeSelectedEffect(event):
             self.IR_NAME = effectName.get()
