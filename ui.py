@@ -1,6 +1,9 @@
 import tkinter as Tk
+from tkinter import ttk
 import tkinter.font as font
 from threading import Thread
+import scipy.io.wavfile as wavfile
+import numpy as np
 # from tkmacosx import Button
 
 
@@ -11,6 +14,9 @@ class Interface():
         self.KEYPRESS = [False for i in range(20)]
         self.CONTINUE = True
         self.RECORDING = False
+        self.IR_PATH = "./IRs/"
+        self.IR_NAME = "Church"
+        self.IR_FULLPATH = "./IRs/Church.wav"
 
     def buttonFlash(self, button):
         button.flash()
@@ -51,24 +57,54 @@ class Interface():
      #        self.btnDown[0].flash()
      
      # Recording Btn clicked
+        
      
-     
-     # Add Record function
+     # Add record and mix features
     def addRecording(self, root):
+        # function for changing the state of recording button
         def recordBtnPressed():
             if self.RECORDING:
                 self.RECORDING = False
-                btn['bg']='green'
-                btn['text']='Start'
+                recordBtn['bg']='green'
+                recordBtn['text']='Start'
             else:
                 self.RECORDING = True
-                btn['bg']='red'
-                btn['text']='Stop'
+                recordBtn['bg']='red'
+                recordBtn['text']='Stop'
+                
+        def mixBtnPressed():
+            fs1, IR = wavfile.read(self.IR_FULLPATH)
+            IR_sig = IR.astype(np.float32) / 2 ** 15
+
+            fs2, mySound = wavfile.read("./output_original.wav")
+            mySound_sig = mySound.astype(np.float32) / 2 ** 15
+
+            output = np.convolve(IR_sig, mySound_sig)
+            
+            wavfile.write("output_mixed.wav", fs1, output)
+            
+        def changeSelectedEffect(event):
+            self.IR_NAME = effectName.get()
+            self.IR_FULLPATH = self.IR_PATH + self.IR_NAME + ".wav"
+            print(self.IR_FULLPATH)
+        
         frame = Tk.Frame(root, borderwidth=2, width=560, height=80)
         frame.pack(side=Tk.TOP, fill=Tk.BOTH, expand=1)
-        btn = Tk.Button(frame, bg='green',fg='white', text='Start', command=recordBtnPressed)
-        btn.place(x=40, y=40, width=50, height=30)
-
+        recordBtn = Tk.Button(frame, bg='green',fg='white', text='Start', command=recordBtnPressed)
+        recordBtn.pack(side=Tk.LEFT, fill=Tk.Y, expand=1)
+        effectName = Tk.StringVar()
+        effectComb = ttk.Combobox(frame, width=20, textvariable=effectName)
+        effectComb['values'] = ('Church',
+                                'Studio',
+                                'University')
+        effectComb.pack(side=Tk.LEFT, fill=Tk.Y, expand=1)
+        effectComb.current(0)
+        effectComb.bind('<<ComboboxSelected>>', changeSelectedEffect)
+        mixBtn = Tk.Button(frame, bg='white',fg='black', text='Mix', command=mixBtnPressed)
+        mixBtn.pack(side=Tk.LEFT, fill=Tk.Y, expand=1)
+    
+    
+        
      # Build UI
     def updateUI(self, root):
 
