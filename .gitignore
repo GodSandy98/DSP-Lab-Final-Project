@@ -2,4 +2,5 @@
 *.pyc
 output_original.wav
 output_mixed.wav
-wav/:
+wav
+!wav/
