@@ -1,10 +1,9 @@
 import tkinter as Tk
 from tkinter import ttk
-import tkinter.font as font
-from threading import Thread
 import scipy.io.wavfile as wavfile
 import numpy as np
 from playsound import playsound
+from datetime import datetime
 import platform
 if platform.system() == "Darwin":
     from tkmacosx import Button
@@ -20,9 +19,6 @@ class Interface:
         self.IR_PATH = "./IRs/"
         self.IR_NAME = "Church"
         self.IR_FULLPATH = "./IRs/Church.wav"
-
-    def buttonFlash(self, button):
-        button.flash()
 
      # KeyPressed function
     def my_function(self, event):
@@ -49,8 +45,6 @@ class Interface:
                 self.KEYPRESS[i] = True
      
      # Recording Btn clicked
-        
-     
      # Add record and mix features
     def addRecording(self, root):
         # function for changing the state of recording button
@@ -65,20 +59,18 @@ class Interface:
                 recordBtn['text']='Stop'
                 
         def mixBtnPressed():
-            try:
-                fs1, IR = wavfile.read(self.IR_FULLPATH)
-                IR_sig = IR.astype(np.float32) / 2 ** 15
+            fs1, IR = wavfile.read(self.IR_FULLPATH)
+            IR_sig = IR.astype(np.float32) / 2 ** 15
 
-                fs2, mySound = wavfile.read("./output_original.wav")
-                mySound_sig = mySound.astype(np.float32) / 2 ** 15
+            fs2, mySound = wavfile.read("./wav/output_original.wav")
+            mySound_sig = mySound.astype(np.float32) / 2 ** 15
 
-                output = np.convolve(IR_sig, mySound_sig)
-                
-                wavfile.write("output_mixed.wav", fs1, output)
-                playsound('output_mixed.wav')
-                print("------ mixed complete ------")
-            except:
-                print("No record file, please try again after recording!")
+            output = np.convolve(IR_sig, mySound_sig)
+            date_string = datetime.now().strftime("%d%m%Y%H%M%S")
+            filename = "./wav/output_mixed" + date_string + ".wav"
+            wavfile.write(filename, fs1, output)
+            playsound(filename)
+            print("------ mixed complete ------")
             
         def changeSelectedEffect(event):
             self.IR_NAME = effectName.get()
@@ -99,12 +91,11 @@ class Interface:
         effectComb.bind('<<ComboboxSelected>>', changeSelectedEffect)
         mixBtn = Button(frame, bg='white',fg='black', text='Mix & Play', command=mixBtnPressed)
         mixBtn.pack(side=Tk.LEFT, fill=Tk.Y, expand=1)
-        
+
      # Build UI
     def updateUI(self, root):
 
         frame = Tk.Frame(root, borderwidth=2, width=320, height=200)
-        # frame = Tk.Frame(outFrame, borderwidth=2, width=560, height=250)
         frame.pack(side=Tk.TOP)
 
         for i in range(12):

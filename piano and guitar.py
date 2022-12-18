@@ -9,9 +9,7 @@ from math import sin, cos, pi
 import tkinter as Tk
 import tkinter.font as tkFont
 import ui
-from threading import Thread
 import wave
-import platform
 
 BLOCKLEN = 64  # Number of frames per block
 WIDTH = 2  # Bytes per sample
@@ -20,7 +18,7 @@ RATE = 8000  # Frames per second
 
 MAXVALUE = 2 ** 15 - 1  # Maximum allowed output signal value (because WIDTH = 2)
 
-output_wavfile = 'output_original.wav'
+output_wavfile = './wav/output_original.wav'
 output_wf = wave.open(output_wavfile, 'w')  # wave file
 output_wf.setframerate(RATE)
 output_wf.setsampwidth(WIDTH)
@@ -37,6 +35,7 @@ majors = {
     'F': 8,
     'G': 10
 }
+
 
 def updateMajorParameters(major):
     Ta = 2
@@ -58,7 +57,6 @@ def updateMajorParameters(major):
     x_guitar = []
     for pitch in pitches:
         x_temp = np.concatenate((np.random.random(pitch) * 10, np.zeros(2000, dtype=int)))
-        # print(x_temp)
         x_guitar.append(x_temp)
     kr_guitar = [40 - pitch for pitch in pitches]
     kw_guitar = [0] * 20
@@ -111,7 +109,6 @@ m1.pack(side=Tk.LEFT)
 m2.pack(side=Tk.LEFT)
 
 Ta = 2  # Decay time (seconds)
-# f0 = 220 * 2 ** (3.0/12.0)    # Frequency (Hz) (note A)
 f0 = 220 * 2 ** (3.0 / 12.0)  # Frequency (Hz) (note A)
 R = [2 ** (1.0 / 12.0 * i) for i in range(20)]  # 1.05946309^i
 f = [f0 * i for i in R]  # 220 * 1.05946309^i
@@ -166,9 +163,7 @@ while CONTINUE:
 
     KEYPRESS = ui.KEYPRESS
 
-    # print(KEYPRESS)
     CONTINUE = ui.CONTINUE
-    # thread1 = Thread(target=)
     recording = list()
 
     if mode == 0:
@@ -190,10 +185,8 @@ while CONTINUE:
     elif mode == 1:
         gain_guitar = [0] * 20
         total = [[0] * 2036 for i in range(20)]
-        # print(len(total))
-        # print(len(total[0]))
         subtotal = [[0] * 2036 for i in range(20)]
-        # print(len(subtotal))
+
         for i in range(20):
             # y = 0
             if KEYPRESS[i] and CONTINUE:
@@ -212,25 +205,17 @@ while CONTINUE:
                     if kw_guitar[i] >= 40:
                         # The index has reached the end of the buffer. Circle the index back to the front.
                         kw_guitar[i] = 0
-                # while len(subtotal[i]) < 8036:
-                #     subtotal[i].append(0)
-                #     subtotal[i][j] = int(np.clip(subtotal[i][j], -MAXVALUE, MAXVALUE))  # Clipping
-                # binary_data = struct.pack('h' * 8036, *subtotal[i])  # Convert to binary binary data
+
                 gain_guitar[i] = 0.0
                 KEYPRESS[i] = False
 
                 for j in range(2036):
-                    # print(len(total), len(subtotal))
-                    # print(len(total[i]), len(subtotal[i]))
                     total[i][j] = total[i][j] + subtotal[i][j]
                     total[i][j] = int(np.clip(total[i][j], -MAXVALUE, MAXVALUE))  # Clipping
-                # total[i][] = int(np.clip(total[i][j], -MAXVALUE, MAXVALUE))
                 binary_data = struct.pack('h'*2036, *total[i])  # Convert to binary binary data
                 if ui.RECORDING:
                     output_wf.writeframes(binary_data)
                 stream.write(binary_data)  # Write binary binary data to audio output
-                # for i in range(20):
-                #     gain_guitar[i] = 0
 
 print('* Done.')
 
